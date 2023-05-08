@@ -53,7 +53,10 @@ export default class Form extends Component {
         {response && (
           <div>
             <h2>Response:</h2>
-            <pre>{JSON.stringify(response, null, 2)}</pre>
+            <p>Status: {response.status}</p>
+            <p>Nonce: {response.payload.nonce}</p>
+            <p>Address: {response.payload.address}</p>
+            <p>Timestamp: {response.payload.timestamp}</p>
           </div>
         )}
         {error && (
