@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/license-marketplace/static/css/main.073c9b0a.css",
-    "main.js": "/license-marketplace/static/js/main.aa765253.js",
-    "static/js/787.b4a8bc17.chunk.js": "/license-marketplace/static/js/787.b4a8bc17.chunk.js",
-    "static/media/logo.svg": "/license-marketplace/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/license-marketplace/index.html",
-    "main.073c9b0a.css.map": "/license-marketplace/static/css/main.073c9b0a.css.map",
-    "main.aa765253.js.map": "/license-marketplace/static/js/main.aa765253.js.map",
-    "787.b4a8bc17.chunk.js.map": "/license-marketplace/static/js/787.b4a8bc17.chunk.js.map"
+    "main.css": "/customer-ui/static/css/main.073c9b0a.css",
+    "main.js": "/customer-ui/static/js/main.8d0a2b4c.js",
+    "static/js/787.b4a8bc17.chunk.js": "/customer-ui/static/js/787.b4a8bc17.chunk.js",
+    "static/media/logo.svg": "/customer-ui/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/customer-ui/index.html",
+    "main.073c9b0a.css.map": "/customer-ui/static/css/main.073c9b0a.css.map",
+    "main.8d0a2b4c.js.map": "/customer-ui/static/js/main.8d0a2b4c.js.map",
+    "787.b4a8bc17.chunk.js.map": "/customer-ui/static/js/787.b4a8bc17.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.aa765253.js"
+    "static/js/main.8d0a2b4c.js"
   ]
 }
