@@ -6,6 +6,8 @@ export default class Form extends Component {
     super(props);
     this.state = {
       address: "",
+      response: null,
+      error: null,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -22,13 +24,20 @@ export default class Form extends Component {
   async handleSubmit(event) {
     event.preventDefault();
     const { address } = this.state;
-    await axios.post(
-      "https://b1r5aq31x2.execute-api.us-east-1.amazonaws.com/Prod/activation/nonce",
-      { address }
-    );
+    try {
+      const response = await axios.post(
+        "https://b1r5aq31x2.execute-api.us-east-1.amazonaws.com/Prod/activation/nonce",
+        { address }
+      );
+      this.setState({ response: response.data, error: null });
+    } catch (error) {
+      this.setState({ error: error.message, response: null });
+    }
   }
 
   render() {
+    const { response, error } = this.state;
+
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -41,6 +50,18 @@ export default class Form extends Component {
           />
           <button type="submit">Send</button>
         </form>
+        {response && (
+          <div>
+            <h2>Response:</h2>
+            <pre>{JSON.stringify(response, null, 2)}</pre>
+          </div>
+        )}
+        {error && (
+          <div>
+            <h2>Error:</h2>
+            <p>{error}</p>
+          </div>
+        )}
       </div>
     );
   }
