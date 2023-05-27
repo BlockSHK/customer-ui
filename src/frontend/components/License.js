@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 import axios from "axios";
+import { ethers } from "ethers";
+import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
+import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
+import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
 
 export default class License extends Component {
   constructor(props) {
@@ -8,6 +12,8 @@ export default class License extends Component {
       licenses: [],
       error: null,
     };
+
+    this.provider = new ethers.providers.Web3Provider(window.ethereum);
   }
 
   componentDidMount() {
@@ -23,6 +29,29 @@ export default class License extends Component {
       this.setState({ licenses: response.data.payload.records, error: null });
     } catch (error) {
       this.setState({ error: error.message, licenses: [] });
+    }
+  };
+
+  buyToken = async (license) => {
+    const contractAbi =
+      license.type === "CONTRACT_PERPETUAL"
+        ? PerpetualLicenseAbi.abi
+        : license.type === "CONTRACT_FIXED_SUBSCRIPTION"
+        ? FixedSubscriptionAbi.abi
+        : AutoRenewSubscriptionAbi.abi;
+
+    const contract = new ethers.Contract(
+      license.contract.address,
+      contractAbi,
+      this.provider.getSigner()
+    );
+    try {
+      const tx = await contract.buyToken({
+        value: license.price,
+      }); // replace "1.0" with the appropriate price
+      console.log(tx);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -43,6 +72,7 @@ export default class License extends Component {
             <p>Status: {license.status}</p>
             <p>Company: {license.company}</p>
             <p>Owner: {license.owner}</p>
+            <button onClick={() => this.buyToken(license)}>Buy Token</button>
           </div>
         ))}
         {error && (
