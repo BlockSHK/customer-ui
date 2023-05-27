@@ -1,55 +1,88 @@
-import { Link } from "react-router-dom";
-import { Navbar, Nav, Button, Container } from "react-bootstrap";
+import { Link as RouterLink } from "react-router-dom";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Link,
+  Box,
+  IconButton,
+  Container,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import { styled } from "@mui/system";
 import logo from "./BlockSHK.png";
+
+const CustomButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(1),
+}));
+
+const NavLink = styled(Link)(({ theme }) => ({
+  margin: theme.spacing(1),
+  color: "#ffffff",
+}));
+
+const LinkBox = styled(Box)(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+}));
 
 const Navigation = ({ web3Handler, account }) => {
   return (
-    <Navbar expand="lg" bg="secondary" variant="dark">
+    <AppBar position="static">
       <Container>
-        <Navbar.Brand>
-          <img src={logo} width="40" height="40" className="" alt="" />
-          &nbsp; BlockSHK License Managment System
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/">
+        <Toolbar
+          variant="dense"
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Box display="flex" alignItems="center">
+            <IconButton edge="start" color="inherit" aria-label="menu">
+              <img src={logo} width="40" height="40" alt="" />
+            </IconButton>
+            <Typography variant="h6" component="div">
+              BlockSHK
+            </Typography>
+          </Box>
+          <LinkBox>
+            <NavLink component={RouterLink} to="/">
               Home
-            </Nav.Link>
-            <Nav.Link as={Link} to="/license">
-              License
-            </Nav.Link>
-            <Nav.Link as={Link} to="/create">
-              Create
-            </Nav.Link>
-            <Nav.Link as={Link} to="/my-listed-items">
-              My Listed Items
-            </Nav.Link>
-            <Nav.Link as={Link} to="/my-purchases">
-              My Purchases
-            </Nav.Link>
-          </Nav>
-          <Nav>
+            </NavLink>
+            <NavLink component={RouterLink} to="/buy-license">
+              Buy License
+            </NavLink>
+            <NavLink component={RouterLink} to="/update-license">
+              Update License
+            </NavLink>
+            <NavLink component={RouterLink} to="/sign-message">
+              Sign Message
+            </NavLink>
+            <NavLink component={RouterLink} to="/my-license">
+              My License
+            </NavLink>
             {account ? (
-              <Nav.Link
+              <Link
                 href={`https://etherscan.io/address/${account}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="button nav-button btn-sm mx-4"
               >
-                <Button variant="outline-light">
+                <CustomButton variant="contained" color="primary">
                   {account.slice(0, 5) + "..." + account.slice(38, 42)}
-                </Button>
-              </Nav.Link>
+                </CustomButton>
+              </Link>
             ) : (
-              <Button onClick={web3Handler} variant="outline-light">
+              <CustomButton
+                onClick={web3Handler}
+                variant="contained"
+                color="primary"
+              >
                 Connect Wallet
-              </Button>
+              </CustomButton>
             )}
-          </Nav>
-        </Navbar.Collapse>
+          </LinkBox>
+        </Toolbar>
       </Container>
-    </Navbar>
+    </AppBar>
   );
 };
 

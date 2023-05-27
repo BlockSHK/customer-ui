@@ -1,20 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navigation from "./Navbar";
 import Home from "./Home.js";
-import Create from "./Create.js";
-import MyListedItems from "./MyListedItems.js";
-import MyPurchases from "./MyPurchases.js";
-import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
-import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
-import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
-import LicenseActivationAbi from "../contractsData/LicenseActivation.json";
-import MapCoinAbi from "../contractsData/MapCoin.json";
 import { useState } from "react";
 import { ethers } from "ethers";
 import { Spinner } from "react-bootstrap";
 import "./App.css";
-import Form from "./Form";
-import License from "./License";
+import SignMessage from "./SignMessage";
+import BuyLicense from "./BuyLicense";
+import UpdateLicense from "./UpdateLicense";
+import MyLicense from "./MyLicense";
+
 // import MarketplaceAbi from "/c/Marketplace.json";
 // import MarketplaceAddress from "../contractsData/Marketplace-address.json";
 // import NFTAbi from "../contractsData/NFT.json";
@@ -80,32 +75,11 @@ function App() {
           ) : (
             <Routes>
               {/* <Route path="/" element={<Form />} /> */}
-              <Route path="/" element={<Form />} />
-              <Route
-                path="/create"
-                element={<Create marketplace={marketplace} nft={nft} />}
-              />
-              <Route path="/license" element={<License />} />
-              <Route
-                path="/my-listed-items"
-                element={
-                  <MyListedItems
-                    marketplace={marketplace}
-                    nft={nft}
-                    account={account}
-                  />
-                }
-              />
-              <Route
-                path="/my-purchases"
-                element={
-                  <MyPurchases
-                    marketplace={marketplace}
-                    nft={nft}
-                    account={account}
-                  />
-                }
-              />
+              <Route path="/" element={<Home />} />
+              <Route path="/buy-license" element={<BuyLicense />} />
+              <Route path="/update-license" element={<UpdateLicense />} />
+              <Route path="/sign-message" element={<SignMessage />} />
+              <Route path="/my-license" element={<MyLicense />} />
             </Routes>
           )}
         </div>

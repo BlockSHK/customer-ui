@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 
-export default class Form extends Component {
+export default class UpdateLicense extends Component {
   constructor(props) {
     super(props);
     this.state = {

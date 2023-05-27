@@ -5,7 +5,7 @@ import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
 import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
 import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
 
-export default class License extends Component {
+export default class BuyLicense extends Component {
   constructor(props) {
     super(props);
     this.state = {
