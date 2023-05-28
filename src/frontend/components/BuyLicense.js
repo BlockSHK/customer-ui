@@ -4,6 +4,16 @@ import { ethers } from "ethers";
 import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
 import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
 import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+  Grid,
+  Container,
+} from "@mui/material";
 
 export default class BuyLicense extends Component {
   constructor(props) {
@@ -59,29 +69,62 @@ export default class BuyLicense extends Component {
     const { licenses, error } = this.state;
 
     return (
-      <div>
-        <h2>License List</h2>
-        {licenses.map((license) => (
-          <div key={license.id}>
-            <h3>{license.name}</h3>
-            <p>Software ID: {license.software}</p>
-            <p>Type: {license.type}</p>
-            <p>Description: {license.description}</p>
-            <p>Price: {license.price}</p>
-            <img src={license.image} alt={license.name} />
-            <p>Status: {license.status}</p>
-            <p>Company: {license.company}</p>
-            <p>Owner: {license.owner}</p>
-            <button onClick={() => this.buyToken(license)}>Buy Token</button>
-          </div>
-        ))}
+      <Container maxWidth="md">
+        <Typography variant="h2" align="center" gutterBottom>
+          License List
+        </Typography>
+
+        <Grid container spacing={4}>
+          {licenses.map((license) => (
+            <Grid item key={license.id} xs={12} sm={6} md={4}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={license.image}
+                  alt={license.name}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {license.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Software ID: {license.software}
+                    <br />
+                    Type: {license.type}
+                    <br />
+                    Description: {license.description}
+                    <br />
+                    Price: {license.price}
+                    <br />
+                    Status: {license.status}
+                    <br />
+                    Company: {license.company}
+                    <br />
+                    Owner: {license.owner}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => this.buyToken(license)}
+                  >
+                    Buy Token
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
         {error && (
           <div>
             <h2>Error:</h2>
             <p>{error}</p>
           </div>
         )}
-      </div>
+      </Container>
     );
   }
 }
