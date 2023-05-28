@@ -55,18 +55,97 @@ export default class BuyLicense extends Component {
       contractAbi,
       this.provider.getSigner()
     );
+
+    let tx;
     try {
-      const tx = await contract.buyToken({
-        value: license.price,
-      }); // replace "1.0" with the appropriate price
+      if (license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION") {
+        // If license type is "CONTRACT_AUTO_RENEW_SUBSCRIPTION", don't pass value to buyToken
+        const tx = await contract.buyToken();
+      } else {
+        tx = await contract.buyToken({
+          value: ethers.utils.parseEther(license.price.toString()),
+        });
+      }
       console.log(tx);
     } catch (error) {
       console.error(error);
     }
   };
+  renderLicenseCards = (licenses) => {
+    return licenses.map((license) => (
+      <Grid item key={license.id} xs={12} sm={6} md={4}>
+        <Card>
+          <CardMedia
+            component="img"
+            height="140"
+            image={license.image}
+            alt={license.name}
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="div">
+              {license.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Software ID: {license.software}
+              <br />
+              Type: {license.type}
+              <br />
+              Description: {license.description}
+              <br />
+              Price: {license.price}
+              <br />
+              Status: {license.status}
+              <br />
+              Company: {license.company}
+              <br />
+              Owner: {license.owner}
+            </Typography>
+          </CardContent>
+          <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => this.buyToken(license)}
+            >
+              Buy Token
+            </Button>
+          </CardActions>
+        </Card>
+      </Grid>
+    ));
+  };
+
+  renderLicenseSection = (licenses, title) => {
+    return (
+      <div>
+        <Typography variant="h4" align="left" gutterBottom>
+          {title}
+        </Typography>
+        {licenses.length > 0 ? (
+          <Grid container spacing={4}>
+            {this.renderLicenseCards(licenses)}
+          </Grid>
+        ) : (
+          <Typography variant="h6" align="center" gutterBottom>
+            No Licenses
+          </Typography>
+        )}
+      </div>
+    );
+  };
 
   render() {
     const { licenses, error } = this.state;
+
+    const perpetualLicenses = licenses.filter(
+      (license) => license.type === "CONTRACT_PERPETUAL"
+    );
+    const fixedSubscriptionLicenses = licenses.filter(
+      (license) => license.type === "CONTRACT_FIXED_SUBSCRIPTION"
+    );
+    const autoRenewSubscriptionLicenses = licenses.filter(
+      (license) => license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION"
+    );
 
     return (
       <Container maxWidth="md">
@@ -74,49 +153,15 @@ export default class BuyLicense extends Component {
           License List
         </Typography>
 
-        <Grid container spacing={4}>
-          {licenses.map((license) => (
-            <Grid item key={license.id} xs={12} sm={6} md={4}>
-              <Card>
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image={license.image}
-                  alt={license.name}
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {license.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Software ID: {license.software}
-                    <br />
-                    Type: {license.type}
-                    <br />
-                    Description: {license.description}
-                    <br />
-                    Price: {license.price}
-                    <br />
-                    Status: {license.status}
-                    <br />
-                    Company: {license.company}
-                    <br />
-                    Owner: {license.owner}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    color="primary"
-                    onClick={() => this.buyToken(license)}
-                  >
-                    Buy Token
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
+        {this.renderLicenseSection(
+          fixedSubscriptionLicenses,
+          "Fixed Subscription Licenses"
+        )}
+        {this.renderLicenseSection(
+          autoRenewSubscriptionLicenses,
+          "Auto Renew Subscription Licenses"
+        )}
 
         {error && (
           <div>
