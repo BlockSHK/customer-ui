@@ -1,16 +1,17 @@
 import React, { Component } from "react";
-import axios from "axios";
+import { ethers } from "ethers";
+import { Card, Button, Form } from "react-bootstrap";
 
 export default class SignMessage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      address: "",
-      response: null,
+      message: "",
+      signedMessage: "",
       error: null,
     };
-    this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.signMessage = this.signMessage.bind(this);
   }
 
   handleChange(event) {
@@ -19,52 +20,65 @@ export default class SignMessage extends Component {
     this.setState({
       [stateField]: inputValue,
     });
-    console.log(this.state);
   }
-  async handleSubmit(event) {
-    event.preventDefault();
-    const { address } = this.state;
+
+  async signMessage() {
+    const { message } = this.state;
     try {
-      const response = await axios.post(
-        "https://b1r5aq31x2.execute-api.us-east-1.amazonaws.com/Prod/activation/nonce",
-        { address }
-      );
-      this.setState({ response: response.data, error: null });
-    } catch (error) {
-      this.setState({ error: error.message, response: null });
+      // Get provider from Metamask
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+
+      // The message will be signed by the current user
+      const signedMessage = await signer.signMessage(message);
+
+      this.setState({ signedMessage });
+    } catch (err) {
+      this.setState({ error: err.message });
     }
   }
 
   render() {
-    const { response, error } = this.state;
+    const { error, signedMessage } = this.state;
 
     return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>Address:</label>
-          <input
-            type="text"
-            name="address"
-            onChange={this.handleChange}
-            value={this.state.address}
-          />
-          <button type="submit">Send</button>
-        </form>
-        {response && (
-          <div>
-            <h2>Response:</h2>
-            <p>Status: {response.status}</p>
-            <p>Nonce: {response.payload.nonce}</p>
-            <p>Address: {response.payload.address}</p>
-            <p>Timestamp: {response.payload.timestamp}</p>
-          </div>
-        )}
-        {error && (
-          <div>
-            <h2>Error:</h2>
-            <p>{error}</p>
-          </div>
-        )}
+      <div className="container mt-5">
+        <Card style={{ width: "50%", margin: "0 auto" }}>
+          <Card.Body>
+            <Card.Title>Sign a Message</Card.Title>
+            <Form>
+              <Form.Group>
+                <Form.Label>Message:</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="message"
+                  onChange={this.handleChange}
+                  value={this.state.message}
+                  placeholder="Enter a message to sign"
+                />
+              </Form.Group>
+              <Button
+                variant="primary"
+                onClick={this.signMessage}
+                className="margin-top"
+              >
+                Sign Message
+              </Button>
+            </Form>
+            {signedMessage && (
+              <div className="mt-3">
+                <Card.Title>Signed Message:</Card.Title>
+                <Card.Text>{signedMessage}</Card.Text>
+              </div>
+            )}
+            {error && (
+              <div className="mt-3">
+                <Card.Title>Error:</Card.Title>
+                <Card.Text>{error}</Card.Text>
+              </div>
+            )}
+          </Card.Body>
+        </Card>
       </div>
     );
   }

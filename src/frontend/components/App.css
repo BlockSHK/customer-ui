@@ -6,6 +6,10 @@
   height: 40vmin;
   pointer-events: none;
 }
+/* App.css */
+.margin-top {
+  margin-top: 20px;
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
