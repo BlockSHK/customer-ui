@@ -99,6 +99,23 @@ export default class ActivateLicense extends Component {
       [stateField]: inputValue,
     });
   }
+  async checkActivation() {
+    const { licenseContractAddress, tokenId } = this.state;
+    const contract = new ethers.Contract(
+      licenseContractAddress,
+      LicenseActivation.abi,
+      this.provider.getSigner()
+    );
+    try {
+      const isLicenseActivated = await contract.isLicenseActivated(tokenId);
+      this.setState({ licenseActivated: isLicenseActivated });
+    } catch (err) {
+      this.setState({
+        licenseActivated: false,
+        error: "Error while checking license activation status: " + err.message,
+      });
+    }
+  }
 
   async checkOwnership() {
     const { contractAddress, tokenId } = this.state;
@@ -113,6 +130,7 @@ export default class ActivateLicense extends Component {
       if (owner) {
         if (owner.toLowerCase() === this.props.account.toLowerCase()) {
           this.setState({ isOwner: true, error: null });
+          await this.checkActivation();
         } else {
           this.setState({
             isOwner: false,
@@ -129,24 +147,6 @@ export default class ActivateLicense extends Component {
       this.setState({
         isOwner: false,
         error: "Error while checking ownership: " + err.message,
-      });
-    }
-  }
-
-  async checkActivation() {
-    const { licenseContractAddress, tokenId } = this.state;
-    const contract = new ethers.Contract(
-      licenseContractAddress,
-      LicenseActivation.abi,
-      this.provider.getSigner()
-    );
-    try {
-      const isLicenseActivated = await contract.isLicenseActivated(tokenId);
-      this.setState({ licenseActivated: isLicenseActivated });
-    } catch (err) {
-      this.setState({
-        licenseActivated: false,
-        error: "Error while checking license activation status: " + err.message,
       });
     }
   }
