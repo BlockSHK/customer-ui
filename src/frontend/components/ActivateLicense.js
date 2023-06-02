@@ -152,15 +152,23 @@ export default class ActivateLicense extends Component {
   }
 
   async activateLicense() {
-    const { licenseContractAddress, hash, signedHash } = this.state;
+    const { licenseContractAddress, tokenId, hash, signedHash } = this.state;
+    console.log(licenseContractAddress, tokenId, hash, signedHash);
     const contract = new ethers.Contract(
       licenseContractAddress,
       LicenseActivation.abi,
       this.provider.getSigner()
     );
 
+    // Create a hash of the message
+    const messageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(hash));
+
     try {
-      const tx = await contract.activateLicense(hash, signedHash);
+      const tx = await contract.activateLicense(
+        tokenId,
+        messageHash,
+        signedHash // Pass the split signature
+      );
       this.setState({ response: tx, error: null });
     } catch (error) {
       this.setState({ error: error.message, response: null });
@@ -168,7 +176,7 @@ export default class ActivateLicense extends Component {
   }
 
   async deactivateLicense() {
-    const { licenseContractAddress } = this.state;
+    const { licenseContractAddress, tokenId } = this.state;
     const contract = new ethers.Contract(
       licenseContractAddress,
       LicenseActivation.abi,
@@ -176,7 +184,7 @@ export default class ActivateLicense extends Component {
     );
 
     try {
-      const tx = await contract.deactivateLicense();
+      const tx = await contract.deactivateLicense(tokenId);
       this.setState({ response: tx, error: null });
     } catch (error) {
       this.setState({ error: error.message, response: null });
@@ -188,7 +196,14 @@ export default class ActivateLicense extends Component {
     const { hash } = this.state;
 
     try {
-      const signature = await signer.signMessage(hash);
+      // Create a hash of the message
+      const messageHash = ethers.utils.keccak256(
+        ethers.utils.toUtf8Bytes(hash)
+      );
+      // Sign the hashed message
+      const signature = await signer.signMessage(
+        ethers.utils.arrayify(messageHash)
+      );
       this.setState({ signedHash: signature });
     } catch (err) {
       this.setState({ error: "Error while signing hash: " + err.message });
