@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { ethers } from "ethers";
 import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
+import LicenseActivation from "../contractsData/LicenseActivation.json";
 import {
   Container,
   TextField,
@@ -14,6 +15,7 @@ export default class ActivateLicense extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      account: "",
       contractAddress: "",
       tokenId: "",
       hash: "",
@@ -32,6 +34,31 @@ export default class ActivateLicense extends Component {
     this.activateLicense = this.activateLicense.bind(this);
     this.deactivateLicense = this.deactivateLicense.bind(this);
     this.signHash = this.signHash.bind(this);
+    this.connectWallet = this.connectWallet.bind(this);
+  }
+
+  async componentDidMount() {
+    await this.connectWallet();
+  }
+
+  async connectWallet() {
+    if (!window.ethereum) {
+      this.setState({
+        error: "Please install Metamask extension in your browser.",
+      });
+      return;
+    }
+    try {
+      // Request account access
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      this.setState({ account: accounts[0] });
+    } catch (error) {
+      this.setState({
+        error: "You need to allow Metamask to connect to this application",
+      });
+    }
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -107,10 +134,10 @@ export default class ActivateLicense extends Component {
   }
 
   async checkActivation() {
-    const { contractAddress, tokenId } = this.state;
+    const { licenseContractAddress, tokenId } = this.state;
     const contract = new ethers.Contract(
-      contractAddress,
-      PerpetualLicenseAbi.abi,
+      licenseContractAddress,
+      LicenseActivation.abi,
       this.provider.getSigner()
     );
     try {
@@ -125,10 +152,10 @@ export default class ActivateLicense extends Component {
   }
 
   async activateLicense() {
-    const { contractAddress, hash, signedHash } = this.state;
+    const { licenseContractAddress, hash, signedHash } = this.state;
     const contract = new ethers.Contract(
-      contractAddress,
-      PerpetualLicenseAbi.abi,
+      licenseContractAddress,
+      LicenseActivation.abi,
       this.provider.getSigner()
     );
 
@@ -141,10 +168,10 @@ export default class ActivateLicense extends Component {
   }
 
   async deactivateLicense() {
-    const { contractAddress } = this.state;
+    const { licenseContractAddress } = this.state;
     const contract = new ethers.Contract(
-      contractAddress,
-      PerpetualLicenseAbi.abi,
+      licenseContractAddress,
+      LicenseActivation.abi,
       this.provider.getSigner()
     );
 
@@ -161,7 +188,7 @@ export default class ActivateLicense extends Component {
     const { hash } = this.state;
 
     try {
-      const signature = await signer.signMessage(ethers.utils.arrayify(hash));
+      const signature = await signer.signMessage(hash);
       this.setState({ signedHash: signature });
     } catch (err) {
       this.setState({ error: "Error while signing hash: " + err.message });
