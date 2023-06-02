@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/customer-ui/static/css/main.70d94d87.css",
-    "main.js": "/customer-ui/static/js/main.fa8d9c15.js",
+    "main.js": "/customer-ui/static/js/main.e8c66a84.js",
     "static/media/BlockSHK.png": "/customer-ui/static/media/BlockSHK.de59bf600d92ef47c642.png",
     "index.html": "/customer-ui/index.html",
     "main.70d94d87.css.map": "/customer-ui/static/css/main.70d94d87.css.map",
-    "main.fa8d9c15.js.map": "/customer-ui/static/js/main.fa8d9c15.js.map"
+    "main.e8c66a84.js.map": "/customer-ui/static/js/main.e8c66a84.js.map"
   },
   "entrypoints": [
     "static/css/main.70d94d87.css",
-    "static/js/main.fa8d9c15.js"
+    "static/js/main.e8c66a84.js"
   ]
 }
