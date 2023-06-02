@@ -59,11 +59,11 @@ export default class BuyLicense extends Component {
     let tx;
     try {
       if (license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION") {
-        // If license type is "CONTRACT_AUTO_RENEW_SUBSCRIPTION", don't pass value to buyToken
-        const tx = await contract.buyToken();
+        tx = await contract.buyToken();
       } else {
         tx = await contract.buyToken({
-          value: ethers.utils.parseEther(license.price.toString()),
+          value: ethers.BigNumber.from(license.price.toString()), // Price is in wei
+          gasLimit: ethers.utils.hexlify(100000), // Set the gas limit here
         });
       }
       console.log(tx);

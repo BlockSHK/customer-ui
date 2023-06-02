@@ -8,7 +8,7 @@ import "./App.css";
 import SignMessage from "./SignMessage";
 import BuyLicense from "./BuyLicense";
 import ManageSubscription from "./ManageSubscription";
-import MyLicense from "./MyLicense";
+import ActivateLicense from "./ActivateLicense";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -65,7 +65,10 @@ function App() {
               />
 
               <Route path="/sign-message" element={<SignMessage />} />
-              <Route path="/my-license" element={<MyLicense />} />
+              <Route
+                path="/activate-license"
+                element={<ActivateLicense account={account} />}
+              />
             </Routes>
           )}
         </div>
