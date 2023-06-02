@@ -57,8 +57,8 @@ const Navigation = ({ web3Handler, account }) => {
             <NavLink component={RouterLink} to="/sign-message">
               Sign Message
             </NavLink>
-            <NavLink component={RouterLink} to="/my-license">
-              My License
+            <NavLink component={RouterLink} to="/activate-license">
+              Activate License
             </NavLink>
             {account ? (
               <Link
