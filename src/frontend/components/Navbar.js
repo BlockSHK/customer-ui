@@ -51,8 +51,8 @@ const Navigation = ({ web3Handler, account }) => {
             <NavLink component={RouterLink} to="/buy-license">
               Buy License
             </NavLink>
-            <NavLink component={RouterLink} to="/update-license">
-              Update License
+            <NavLink component={RouterLink} to="/manage-subscription">
+              Manage Subscription
             </NavLink>
             <NavLink component={RouterLink} to="/sign-message">
               Sign Message

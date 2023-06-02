@@ -7,7 +7,7 @@ import { Spinner } from "react-bootstrap";
 import "./App.css";
 import SignMessage from "./SignMessage";
 import BuyLicense from "./BuyLicense";
-import UpdateLicense from "./UpdateLicense";
+import ManageSubscription from "./ManageSubscription";
 import MyLicense from "./MyLicense";
 
 function App() {
@@ -59,7 +59,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/buy-license" element={<BuyLicense />} />
-              <Route path="/update-license" element={<UpdateLicense />} />
+              <Route
+                path="/manage-subscription"
+                element={<ManageSubscription account={account} />}
+              />
+
               <Route path="/sign-message" element={<SignMessage />} />
               <Route path="/my-license" element={<MyLicense />} />
             </Routes>
