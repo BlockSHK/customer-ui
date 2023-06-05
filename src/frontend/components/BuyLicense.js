@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { ethers } from "ethers";
+import { Box, CircularProgress } from "@mui/material";
 import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
 import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
 import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
@@ -13,6 +14,11 @@ import {
   Typography,
   Grid,
   Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 
 export default class BuyLicense extends Component {
@@ -21,6 +27,10 @@ export default class BuyLicense extends Component {
     this.state = {
       licenses: [],
       error: null,
+      openDialog: false,
+      dialogTitle: "",
+      dialogContent: "",
+      transactionInProgress: false,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -43,6 +53,8 @@ export default class BuyLicense extends Component {
   };
 
   buyToken = async (license) => {
+    this.setState({ transactionInProgress: true });
+
     const contractAbi =
       license.type === "CONTRACT_PERPETUAL"
         ? PerpetualLicenseAbi.abi
@@ -56,21 +68,37 @@ export default class BuyLicense extends Component {
       this.provider.getSigner()
     );
 
-    let tx;
     try {
+      let tx;
       if (license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION") {
         tx = await contract.buyToken();
       } else {
         tx = await contract.buyToken({
-          value: ethers.BigNumber.from(license.price.toString()), // Price is in wei
-          gasLimit: ethers.utils.hexlify(100000), // Set the gas limit here
+          value: ethers.BigNumber.from(license.price.toString()),
+          gasLimit: ethers.utils.hexlify(100000),
         });
       }
-      console.log(tx);
+
+      const receipt = await tx.wait();
+      console.log(receipt);
+      const tokenId = ethers.BigNumber.from(
+        receipt.logs[0].topics[3]
+      ).toString(); // convert hex to decimal
+      this.setState({
+        openDialog: true,
+        dialogTitle: "Transaction Successful",
+        dialogContent: `Token ID: ${tokenId}`,
+        transactionInProgress: false,
+      });
     } catch (error) {
-      console.error(error);
+      this.setState({ error: error.message, transactionInProgress: false });
     }
   };
+
+  handleCloseDialog = () => {
+    this.setState({ openDialog: false });
+  };
+
   renderLicenseCards = (licenses) => {
     return licenses.map((license) => (
       <Grid item key={license.id} xs={12} sm={6} md={4}>
@@ -135,7 +163,14 @@ export default class BuyLicense extends Component {
   };
 
   render() {
-    const { licenses, error } = this.state;
+    const {
+      licenses,
+      error,
+      openDialog,
+      dialogTitle,
+      dialogContent,
+      transactionInProgress,
+    } = this.state;
 
     const perpetualLicenses = licenses.filter(
       (license) => license.type === "CONTRACT_PERPETUAL"
@@ -152,6 +187,26 @@ export default class BuyLicense extends Component {
         <Typography variant="h2" align="center" gutterBottom>
           License List
         </Typography>
+        {transactionInProgress && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 2,
+              backgroundColor: "error.main",
+              color: "white",
+              borderRadius: 1,
+              marginTop: 2,
+            }}
+          >
+            <CircularProgress color="inherit" />
+            <Typography variant="h6" align="center" gutterBottom>
+              Transaction in progress, please wait...
+            </Typography>
+          </Box>
+        )}
 
         {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
         {this.renderLicenseSection(
@@ -169,6 +224,16 @@ export default class BuyLicense extends Component {
             <p>{error}</p>
           </div>
         )}
+
+        <Dialog open={openDialog} onClose={this.handleCloseDialog}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{dialogContent}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     );
   }

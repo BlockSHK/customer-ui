@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { ethers } from "ethers";
-import { Card, Button, Form } from "react-bootstrap";
+import { Button, TextField, Typography, Card, Box } from "@mui/material";
 
 export default class SignMessage extends Component {
   constructor(props) {
@@ -42,44 +42,45 @@ export default class SignMessage extends Component {
     const { error, signedMessage } = this.state;
 
     return (
-      <div className="container mt-5">
-        <Card style={{ width: "50%", margin: "0 auto" }}>
-          <Card.Body>
-            <Card.Title>Sign a Message</Card.Title>
-            <Form>
-              <Form.Group>
-                <Form.Label>Message:</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="message"
-                  onChange={this.handleChange}
-                  value={this.state.message}
-                  placeholder="Enter a message to sign"
-                />
-              </Form.Group>
-              <Button
-                variant="primary"
-                onClick={this.signMessage}
-                className="margin-top"
-              >
-                Sign Message
-              </Button>
-            </Form>
-            {signedMessage && (
-              <div className="mt-3">
-                <Card.Title>Signed Message:</Card.Title>
-                <Card.Text>{signedMessage}</Card.Text>
-              </div>
-            )}
-            {error && (
-              <div className="mt-3">
-                <Card.Title>Error:</Card.Title>
-                <Card.Text>{error}</Card.Text>
-              </div>
-            )}
-          </Card.Body>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "40vh",
+        }}
+      >
+        <Card sx={{ width: "50%", padding: 3, textAlign: "center" }}>
+          <Typography variant="h5" gutterBottom>
+            Sign a Message
+          </Typography>
+          <TextField
+            fullWidth
+            margin="normal"
+            name="message"
+            onChange={this.handleChange}
+            value={this.state.message}
+            placeholder="Enter a message to sign"
+          />
+          <Button variant="contained" onClick={this.signMessage} sx={{ mt: 3 }}>
+            Sign Message
+          </Button>
+          {signedMessage && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6">Signed Message:</Typography>
+              <Typography sx={{ wordWrap: "break-word" }}>
+                {signedMessage}
+              </Typography>
+            </Box>
+          )}
+          {error && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6">Error:</Typography>
+              <Typography>{error}</Typography>
+            </Box>
+          )}
         </Card>
-      </div>
+      </Box>
     );
   }
 }
