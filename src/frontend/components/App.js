@@ -9,6 +9,17 @@ import SignMessage from "./SignMessage";
 import BuyLicense from "./BuyLicense";
 import ManageSubscription from "./ManageSubscription";
 import ActivateLicense from "./ActivateLicense";
+import Footer from "./Footer";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#123456", // You should change this to the color you want
+    },
+    // Define other parts of the theme as needed
+  },
+});
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -39,41 +50,51 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Navigation web3Handler={web3Handler} account={account} />
-        <div>
-          {loading ? (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                minHeight: "80vh",
-              }}
-            >
-              <Spinner animation="border" style={{ display: "flex" }} />
-              <p className="mx-3 my-0">Awaiting Metamask Connection...</p>
-            </div>
-          ) : (
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/buy-license" element={<BuyLicense />} />
-              <Route
-                path="/manage-subscription"
-                element={<ManageSubscription account={account} />}
-              />
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <div
+          className="App"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
+          }}
+        >
+          <Navigation web3Handler={web3Handler} account={account} />
+          <div style={{ flex: 1 }}>
+            {loading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  minHeight: "80vh",
+                }}
+              >
+                <Spinner animation="border" style={{ display: "flex" }} />
+                <p className="mx-3 my-0">Awaiting Metamask Connection...</p>
+              </div>
+            ) : (
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/buy-license" element={<BuyLicense />} />
+                <Route
+                  path="/manage-subscription"
+                  element={<ManageSubscription account={account} />}
+                />
 
-              <Route path="/sign-message" element={<SignMessage />} />
-              <Route
-                path="/activate-license"
-                element={<ActivateLicense account={account} />}
-              />
-            </Routes>
-          )}
+                <Route path="/sign-message" element={<SignMessage />} />
+                <Route
+                  path="/activate-license"
+                  element={<ActivateLicense account={account} />}
+                />
+              </Routes>
+            )}
+          </div>
+          <Footer />
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
