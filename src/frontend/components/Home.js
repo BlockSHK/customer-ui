@@ -1,71 +1,87 @@
-import React, { Component } from "react";
-import axios from "axios";
+import React from "react";
+import { Box, Typography, Grid, Paper } from "@mui/material";
+import Slider from "react-slick"; // you need to install this package
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import microsoft_logo from "./images/microsoft.webp";
+import { styled } from "@mui/material/styles";
 
-export default class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      address: "",
-      response: null,
-      error: null,
-    };
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
+const Home = () => (
+  <Box>
+    <BackgroundSlider />
+    <HowItWorks />
+    <Founders />
+  </Box>
+);
 
-  handleChange(event) {
-    const inputValue = event.target.value;
-    const stateField = event.target.name;
-    this.setState({
-      [stateField]: inputValue,
-    });
-    console.log(this.state);
-  }
-  async handleSubmit(event) {
-    event.preventDefault();
-    const { address } = this.state;
-    try {
-      const response = await axios.post(
-        "https://b1r5aq31x2.execute-api.us-east-1.amazonaws.com/Prod/activation/nonce",
-        { address }
-      );
-      this.setState({ response: response.data, error: null });
-    } catch (error) {
-      this.setState({ error: error.message, response: null });
-    }
-  }
+const Image = styled("img")({
+  width: "100%",
+  height: "40vh",
+  objectFit: "cover",
+});
 
-  render() {
-    const { response, error } = this.state;
+const sliderSettings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1,
+};
 
-    return (
-      <div>
-        <form onSubmit={this.handleSubmit}>
-          <label>Address:</label>
-          <input
-            type="text"
-            name="address"
-            onChange={this.handleChange}
-            value={this.state.address}
-          />
-          <button type="submit">Send</button>
-        </form>
-        {response && (
-          <div>
-            <h2>Response:</h2>
-            <p>Status: {response.status}</p>
-            <p>Nonce: {response.payload.nonce}</p>
-            <p>Address: {response.payload.address}</p>
-            <p>Timestamp: {response.payload.timestamp}</p>
-          </div>
-        )}
-        {error && (
-          <div>
-            <h2>Error:</h2>
-            <p>{error}</p>
-          </div>
-        )}
-      </div>
-    );
-  }
-}
+const BackgroundSlider = () => (
+  <Box sx={{ width: "100%", height: "40vh", overflow: "hidden" }}>
+    <Slider {...sliderSettings}>
+      <Image src={microsoft_logo} alt="Image 1" />
+      <Image src={microsoft_logo} alt="Image 2" />
+      <Image src={microsoft_logo} alt="Image 3" />
+    </Slider>
+  </Box>
+);
+
+const Founders = () => (
+  <Grid container spacing={2}>
+    <Grid item xs={4}>
+      <Founder
+        name="Name1"
+        image="/path/to/image1.jpg"
+        description="Description1"
+      />
+    </Grid>
+    <Grid item xs={4}>
+      <Founder
+        name="Name2"
+        image="/path/to/image2.jpg"
+        description="Description2"
+      />
+    </Grid>
+    <Grid item xs={4}>
+      <Founder
+        name="Name3"
+        image="/path/to/image3.jpg"
+        description="Description3"
+      />
+    </Grid>
+  </Grid>
+);
+
+const Founder = ({ name, image, description }) => (
+  <Paper>
+    <img src={image} alt={name} />
+    <Typography variant="h6">{name}</Typography>
+    <Typography>{description}</Typography>
+  </Paper>
+);
+
+const HowItWorks = () => (
+  <Box>
+    <Typography variant="h4">How It Works</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+    <Typography>Here you describe how the application works.</Typography>
+  </Box>
+);
+
+export default Home;
