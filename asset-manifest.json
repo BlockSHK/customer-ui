@@ -1,14 +1,19 @@
 {
   "files": {
-    "main.css": "/customer-ui/static/css/main.70d94d87.css",
-    "main.js": "/customer-ui/static/js/main.8d0fe69f.js",
+    "main.css": "/customer-ui/static/css/main.65f42796.css",
+    "main.js": "/customer-ui/static/js/main.090e093b.js",
+    "static/media/microsoft.webp": "/customer-ui/static/media/microsoft.c3daeaa91be80b47f383.webp",
     "static/media/BlockSHK.png": "/customer-ui/static/media/BlockSHK.de59bf600d92ef47c642.png",
+    "static/media/slick.svg": "/customer-ui/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/customer-ui/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/customer-ui/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/customer-ui/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/customer-ui/index.html",
-    "main.70d94d87.css.map": "/customer-ui/static/css/main.70d94d87.css.map",
-    "main.8d0fe69f.js.map": "/customer-ui/static/js/main.8d0fe69f.js.map"
+    "main.65f42796.css.map": "/customer-ui/static/css/main.65f42796.css.map",
+    "main.090e093b.js.map": "/customer-ui/static/js/main.090e093b.js.map"
   },
   "entrypoints": [
-    "static/css/main.70d94d87.css",
-    "static/js/main.8d0fe69f.js"
+    "static/css/main.65f42796.css",
+    "static/js/main.090e093b.js"
   ]
 }
