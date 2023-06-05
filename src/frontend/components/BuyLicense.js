@@ -13,6 +13,11 @@ import {
   Typography,
   Grid,
   Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 
 export default class BuyLicense extends Component {
@@ -21,6 +26,9 @@ export default class BuyLicense extends Component {
     this.state = {
       licenses: [],
       error: null,
+      openDialog: false,
+      dialogTitle: "",
+      dialogContent: "",
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -56,21 +64,36 @@ export default class BuyLicense extends Component {
       this.provider.getSigner()
     );
 
-    let tx;
     try {
+      let tx;
       if (license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION") {
         tx = await contract.buyToken();
       } else {
         tx = await contract.buyToken({
-          value: ethers.BigNumber.from(license.price.toString()), // Price is in wei
-          gasLimit: ethers.utils.hexlify(100000), // Set the gas limit here
+          value: ethers.BigNumber.from(license.price.toString()),
+          gasLimit: ethers.utils.hexlify(100000),
         });
       }
-      console.log(tx);
+
+      const receipt = await tx.wait();
+      console.log(receipt);
+      const tokenId = ethers.BigNumber.from(
+        receipt.logs[0].topics[3]
+      ).toString(); // adjust this to match the actual event structure
+      this.setState({
+        openDialog: true,
+        dialogTitle: "Transaction Successful",
+        dialogContent: `Token ID: ${tokenId}`,
+      });
     } catch (error) {
-      console.error(error);
+      this.setState({ error: error.message });
     }
   };
+
+  handleCloseDialog = () => {
+    this.setState({ openDialog: false });
+  };
+
   renderLicenseCards = (licenses) => {
     return licenses.map((license) => (
       <Grid item key={license.id} xs={12} sm={6} md={4}>
@@ -135,7 +158,8 @@ export default class BuyLicense extends Component {
   };
 
   render() {
-    const { licenses, error } = this.state;
+    const { licenses, error, openDialog, dialogTitle, dialogContent } =
+      this.state;
 
     const perpetualLicenses = licenses.filter(
       (license) => license.type === "CONTRACT_PERPETUAL"
@@ -169,6 +193,16 @@ export default class BuyLicense extends Component {
             <p>{error}</p>
           </div>
         )}
+
+        <Dialog open={openDialog} onClose={this.handleCloseDialog}>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>{dialogContent}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     );
   }
