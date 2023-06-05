@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { ethers } from "ethers";
+import { Box, CircularProgress } from "@mui/material";
 import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
 import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
 import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
@@ -29,6 +30,7 @@ export default class BuyLicense extends Component {
       openDialog: false,
       dialogTitle: "",
       dialogContent: "",
+      transactionInProgress: false,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -51,6 +53,8 @@ export default class BuyLicense extends Component {
   };
 
   buyToken = async (license) => {
+    this.setState({ transactionInProgress: true });
+
     const contractAbi =
       license.type === "CONTRACT_PERPETUAL"
         ? PerpetualLicenseAbi.abi
@@ -79,14 +83,15 @@ export default class BuyLicense extends Component {
       console.log(receipt);
       const tokenId = ethers.BigNumber.from(
         receipt.logs[0].topics[3]
-      ).toString(); // adjust this to match the actual event structure
+      ).toString(); // convert hex to decimal
       this.setState({
         openDialog: true,
         dialogTitle: "Transaction Successful",
         dialogContent: `Token ID: ${tokenId}`,
+        transactionInProgress: false,
       });
     } catch (error) {
-      this.setState({ error: error.message });
+      this.setState({ error: error.message, transactionInProgress: false });
     }
   };
 
@@ -158,8 +163,14 @@ export default class BuyLicense extends Component {
   };
 
   render() {
-    const { licenses, error, openDialog, dialogTitle, dialogContent } =
-      this.state;
+    const {
+      licenses,
+      error,
+      openDialog,
+      dialogTitle,
+      dialogContent,
+      transactionInProgress,
+    } = this.state;
 
     const perpetualLicenses = licenses.filter(
       (license) => license.type === "CONTRACT_PERPETUAL"
@@ -176,6 +187,26 @@ export default class BuyLicense extends Component {
         <Typography variant="h2" align="center" gutterBottom>
           License List
         </Typography>
+        {transactionInProgress && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 2,
+              backgroundColor: "error.main",
+              color: "white",
+              borderRadius: 1,
+              marginTop: 2,
+            }}
+          >
+            <CircularProgress color="inherit" />
+            <Typography variant="h6" align="center" gutterBottom>
+              Transaction in progress, please wait...
+            </Typography>
+          </Box>
+        )}
 
         {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
         {this.renderLicenseSection(
