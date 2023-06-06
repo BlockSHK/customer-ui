@@ -8,10 +8,9 @@ const FooterStyle = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   color: "#ffffff",
   padding: theme.spacing(3, 0),
-  position: "fixed",
+  position: "sticky",
   bottom: 0,
   width: "100%",
-  zIndex: 9999,
 }));
 
 const Footer = () => {

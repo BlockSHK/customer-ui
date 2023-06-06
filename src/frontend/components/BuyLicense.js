@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import axios from "axios";
 import { ethers } from "ethers";
-import { Box, CircularProgress } from "@mui/material";
-import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
-import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
-import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
 import {
+  Box,
+  CircularProgress,
   Card,
   CardMedia,
   CardContent,
@@ -19,7 +17,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Paper,
 } from "@mui/material";
+import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
+import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
+import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
 
 export default class BuyLicense extends Component {
   constructor(props) {
@@ -31,6 +33,8 @@ export default class BuyLicense extends Component {
       dialogTitle: "",
       dialogContent: "",
       transactionInProgress: false,
+      loading: true,
+      licenseDetail: null,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -46,14 +50,22 @@ export default class BuyLicense extends Component {
         "https://b1r5aq31x2.execute-api.us-east-1.amazonaws.com/Prod/query/license",
         {}
       );
-      this.setState({ licenses: response.data.payload.records, error: null });
+      this.setState({
+        licenses: response.data.payload.records,
+        loading: false,
+      });
     } catch (error) {
-      this.setState({ error: error.message, licenses: [] });
+      this.setState({ error: error.message, loading: false });
     }
   };
 
   buyToken = async (license) => {
-    this.setState({ transactionInProgress: true });
+    this.setState({
+      transactionInProgress: true,
+      openDialog: true,
+      dialogTitle: "Transaction In Progress",
+      dialogContent: "To start the transaction, please confirm in MetaMask.",
+    });
 
     const contractAbi =
       license.type === "CONTRACT_PERPETUAL"
@@ -96,7 +108,20 @@ export default class BuyLicense extends Component {
   };
 
   handleCloseDialog = () => {
-    this.setState({ openDialog: false });
+    this.setState({
+      openDialog: false,
+      dialogTitle: "",
+      dialogContent: "",
+      licenseDetail: null,
+    });
+  };
+
+  handleOpenLicenseDetail = (license) => {
+    this.setState({ licenseDetail: license, openDialog: true });
+  };
+
+  convertWeiToEther = (wei) => {
+    return ethers.utils.formatEther(wei);
   };
 
   renderLicenseCards = (licenses) => {
@@ -116,20 +141,31 @@ export default class BuyLicense extends Component {
             <Typography variant="body2" color="text.secondary">
               Software ID: {license.software}
               <br />
-              Type: {license.type}
+              Price:{" "}
+              {license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION"
+                ? license.price
+                : this.convertWeiToEther(license.price)}
               <br />
-              Description: {license.description}
-              <br />
-              Price: {license.price}
-              <br />
-              Status: {license.status}
-              <br />
-              Company: {license.company}
-              <br />
-              Owner: {license.owner}
+              {license.type === "CONTRACT_FIXED_SUBSCRIPTION" && (
+                <div>Subscription Period: {license.subscriptionPeriod}</div>
+              )}
+              {license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION" && (
+                <div>
+                  Subscription Period: {license.subscriptionPeriod}
+                  <br />
+                  Payment Token: {license.paymentToken}
+                </div>
+              )}
             </Typography>
           </CardContent>
           <CardActions>
+            <Button
+              size="small"
+              color="primary"
+              onClick={() => this.handleOpenLicenseDetail(license)}
+            >
+              View
+            </Button>
             <Button
               size="small"
               color="primary"
@@ -142,10 +178,9 @@ export default class BuyLicense extends Component {
       </Grid>
     ));
   };
-
   renderLicenseSection = (licenses, title) => {
     return (
-      <div>
+      <Box component={Paper} p={2} mt={2} mb={2}>
         <Typography variant="h4" align="left" gutterBottom>
           {title}
         </Typography>
@@ -154,23 +189,70 @@ export default class BuyLicense extends Component {
             {this.renderLicenseCards(licenses)}
           </Grid>
         ) : (
-          <Typography variant="h6" align="center" gutterBottom>
+          <Typography variant="body1" align="center">
             No Licenses
           </Typography>
         )}
-      </div>
+      </Box>
     );
   };
 
+  renderLicenseDetailDialog = (license) => {
+    return (
+      <Dialog open={this.state.openDialog} onClose={this.handleCloseDialog}>
+        <DialogTitle>{license ? license.name : ""}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Software ID: {license ? license.software : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Type: {license ? license.type : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Description: {license ? license.description : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Price:{" "}
+            {license
+              ? license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION"
+                ? license.price
+                : this.convertWeiToEther(license.price)
+              : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Status: {license ? license.status : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Company: {license ? license.company : ""}
+          </DialogContentText>
+          <DialogContentText>
+            Owner: {license ? license.owner : ""}
+          </DialogContentText>
+          {license && license.type === "CONTRACT_FIXED_SUBSCRIPTION" && (
+            <DialogContentText>
+              Subscription Period: {license.subscriptionPeriod}
+            </DialogContentText>
+          )}
+          {license && license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION" && (
+            <div>
+              <DialogContentText>
+                Subscription Period: {license.subscriptionPeriod}
+              </DialogContentText>
+              <DialogContentText>
+                Payment Token: {license.paymentToken}
+              </DialogContentText>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={this.handleCloseDialog}>Close</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
   render() {
-    const {
-      licenses,
-      error,
-      openDialog,
-      dialogTitle,
-      dialogContent,
-      transactionInProgress,
-    } = this.state;
+    const { licenses, error, loading, transactionInProgress, licenseDetail } =
+      this.state;
 
     const perpetualLicenses = licenses.filter(
       (license) => license.type === "CONTRACT_PERPETUAL"
@@ -184,22 +266,23 @@ export default class BuyLicense extends Component {
 
     return (
       <Container maxWidth="md">
-        <Typography variant="h2" align="center" gutterBottom>
-          License List
-        </Typography>
+        <Box mt={4} mb={2}>
+          <Typography variant="h2" align="center" gutterBottom>
+            License List
+          </Typography>
+        </Box>
+
         {transactionInProgress && (
           <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 2,
-              backgroundColor: "error.main",
-              color: "white",
-              borderRadius: 1,
-              marginTop: 2,
-            }}
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            padding={2}
+            bgcolor="error.main"
+            color="white"
+            borderRadius={1}
+            marginBottom={2}
           >
             <CircularProgress color="inherit" />
             <Typography variant="h6" align="center" gutterBottom>
@@ -208,32 +291,32 @@ export default class BuyLicense extends Component {
           </Box>
         )}
 
-        {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
-        {this.renderLicenseSection(
-          fixedSubscriptionLicenses,
-          "Fixed Subscription Licenses"
-        )}
-        {this.renderLicenseSection(
-          autoRenewSubscriptionLicenses,
-          "Auto Renew Subscription Licenses"
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={5}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <>
+            {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
+            {this.renderLicenseSection(
+              fixedSubscriptionLicenses,
+              "Fixed Subscription Licenses"
+            )}
+            {this.renderLicenseSection(
+              autoRenewSubscriptionLicenses,
+              "Auto Renew Subscription Licenses"
+            )}
+          </>
         )}
 
         {error && (
-          <div>
-            <h2>Error:</h2>
-            <p>{error}</p>
-          </div>
+          <Box color="error.main" mt={2}>
+            <Typography variant="h6">Error:</Typography>
+            <Typography variant="body1">{error}</Typography>
+          </Box>
         )}
 
-        <Dialog open={openDialog} onClose={this.handleCloseDialog}>
-          <DialogTitle>{dialogTitle}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>{dialogContent}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleCloseDialog}>Close</Button>
-          </DialogActions>
-        </Dialog>
+        {this.renderLicenseDetailDialog(licenseDetail)}
       </Container>
     );
   }
