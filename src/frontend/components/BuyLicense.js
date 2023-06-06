@@ -33,6 +33,7 @@ export default class BuyLicense extends Component {
       dialogTitle: "",
       dialogContent: "",
       transactionInProgress: false,
+      transactionComplete: false,
       loading: true,
       licenseDetail: null,
     };
@@ -62,7 +63,6 @@ export default class BuyLicense extends Component {
   buyToken = async (license) => {
     this.setState({
       transactionInProgress: true,
-      openDialog: true,
       dialogTitle: "Transaction In Progress",
       dialogContent: "To start the transaction, please confirm in MetaMask.",
     });
@@ -97,10 +97,9 @@ export default class BuyLicense extends Component {
         receipt.logs[0].topics[3]
       ).toString(); // convert hex to decimal
       this.setState({
-        openDialog: true,
         dialogTitle: "Transaction Successful",
         dialogContent: `Token ID: ${tokenId}`,
-        transactionInProgress: false,
+        transactionComplete: true,
       });
     } catch (error) {
       this.setState({ error: error.message, transactionInProgress: false });
@@ -112,10 +111,20 @@ export default class BuyLicense extends Component {
       openDialog: false,
       dialogTitle: "",
       dialogContent: "",
+      transactionInProgress: false,
+      transactionComplete: false,
       licenseDetail: null,
     });
   };
-
+  handleCloseTransactionDialog = () => {
+    this.setState({
+      transactionInProgress: false,
+      transactionComplete: false,
+      openDialog: false,
+      dialogTitle: "",
+      dialogContent: "",
+    });
+  };
   handleOpenLicenseDetail = (license) => {
     this.setState({ licenseDetail: license, openDialog: true });
   };
@@ -251,8 +260,7 @@ export default class BuyLicense extends Component {
     );
   };
   render() {
-    const { licenses, error, loading, transactionInProgress, licenseDetail } =
-      this.state;
+    const { licenses, error, loading, licenseDetail } = this.state;
 
     const perpetualLicenses = licenses.filter(
       (license) => license.type === "CONTRACT_PERPETUAL"
@@ -271,25 +279,6 @@ export default class BuyLicense extends Component {
             License List
           </Typography>
         </Box>
-
-        {transactionInProgress && (
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            justifyContent="center"
-            padding={2}
-            bgcolor="error.main"
-            color="white"
-            borderRadius={1}
-            marginBottom={2}
-          >
-            <CircularProgress color="inherit" />
-            <Typography variant="h6" align="center" gutterBottom>
-              Transaction in progress, please wait...
-            </Typography>
-          </Box>
-        )}
 
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
@@ -317,6 +306,24 @@ export default class BuyLicense extends Component {
         )}
 
         {this.renderLicenseDetailDialog(licenseDetail)}
+
+        <Dialog
+          open={
+            this.state.transactionInProgress || this.state.transactionComplete
+          }
+          onClose={
+            this.state.transactionComplete ? this.handleCloseDialog : undefined
+          }
+        >
+          <DialogTitle>{this.state.dialogTitle}</DialogTitle>
+          <DialogContent>
+            {!this.state.transactionComplete && <CircularProgress />}
+            <DialogContentText>{this.state.dialogContent}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCloseDialog}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     );
   }
