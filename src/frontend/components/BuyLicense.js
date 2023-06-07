@@ -274,56 +274,76 @@ export default class BuyLicense extends Component {
 
     return (
       <Container maxWidth="md">
-        <Box mt={4} mb={2}>
-          <Typography variant="h2" align="center" gutterBottom>
-            License List
-          </Typography>
-        </Box>
-
-        {loading ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
-            {this.renderLicenseSection(
-              fixedSubscriptionLicenses,
-              "Fixed Subscription Licenses"
-            )}
-            {this.renderLicenseSection(
-              autoRenewSubscriptionLicenses,
-              "Auto Renew Subscription Licenses"
-            )}
-          </>
-        )}
-
-        {error && (
-          <Box color="error.main" mt={2}>
-            <Typography variant="h6">Error:</Typography>
-            <Typography variant="body1">{error}</Typography>
-          </Box>
-        )}
-
-        {this.renderLicenseDetailDialog(licenseDetail)}
-
-        <Dialog
-          open={
-            this.state.transactionInProgress || this.state.transactionComplete
-          }
-          onClose={
-            this.state.transactionComplete ? this.handleCloseDialog : undefined
-          }
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "40vh",
+            padding: 3,
+          }}
         >
-          <DialogTitle>{this.state.dialogTitle}</DialogTitle>
-          <DialogContent>
-            {!this.state.transactionComplete && <CircularProgress />}
-            <DialogContentText>{this.state.dialogContent}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleCloseDialog}>Close</Button>
-          </DialogActions>
-        </Dialog>
+          <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
+            <Box mt={4} mb={2}>
+              <Typography variant="h4" align="center" gutterBottom>
+                Buy Your License Here
+              </Typography>
+            </Box>
+
+            {loading ? (
+              <Box display="flex" justifyContent="center" mt={5}>
+                <CircularProgress />
+              </Box>
+            ) : (
+              <>
+                {this.renderLicenseSection(
+                  perpetualLicenses,
+                  "Perpetual Licenses"
+                )}
+                {this.renderLicenseSection(
+                  fixedSubscriptionLicenses,
+                  "Fixed Subscription Licenses"
+                )}
+                {this.renderLicenseSection(
+                  autoRenewSubscriptionLicenses,
+                  "Auto Renew Subscription Licenses"
+                )}
+              </>
+            )}
+
+            {error && (
+              <Box color="error.main" mt={2}>
+                <Typography variant="h6">Error:</Typography>
+                <Typography variant="body1">{error}</Typography>
+              </Box>
+            )}
+
+            {this.renderLicenseDetailDialog(licenseDetail)}
+
+            <Dialog
+              open={
+                this.state.transactionInProgress ||
+                this.state.transactionComplete
+              }
+              onClose={
+                this.state.transactionComplete
+                  ? this.handleCloseDialog
+                  : undefined
+              }
+            >
+              <DialogTitle>{this.state.dialogTitle}</DialogTitle>
+              <DialogContent>
+                {!this.state.transactionComplete && <CircularProgress />}
+                <DialogContentText>
+                  {this.state.dialogContent}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.handleCloseDialog}>Close</Button>
+              </DialogActions>
+            </Dialog>
+          </Card>
+        </Box>
       </Container>
     );
   }

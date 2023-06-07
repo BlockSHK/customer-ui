@@ -14,6 +14,7 @@ import {
   DialogContentText,
   DialogActions,
   Snackbar,
+  Card,
 } from "@mui/material";
 
 export default class ManageSubscription extends Component {
@@ -133,66 +134,77 @@ export default class ManageSubscription extends Component {
 
     return (
       <Container maxWidth="sm">
-        <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Manage Subscription
-        </Typography>
-        <Box component="form" sx={{ mt: 2 }}>
-          <TextField
-            label="Contract Address"
-            value={contractAddress}
-            name="contractAddress"
-            onChange={this.handleChange}
-            fullWidth
-          />
-          <TextField
-            label="Token ID"
-            value={tokenId}
-            name="tokenId"
-            onChange={this.handleChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={this.checkOwnership}
-            sx={{ mt: 2 }}
-          >
-            Check Ownership
-          </Button>
-          {isOwner ? (
-            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                fullWidth
-                onClick={this.updateSubscription}
-              >
-                Update Subscription
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                fullWidth
-                onClick={this.cancelSubscription}
-              >
-                Cancel Subscription
-              </Button>
-            </Box>
-          ) : (
-            error && <Alert severity="error">{error}</Alert>
-          )}
-        </Box>
-        {response && (
-          <div>
-            <Typography variant="h5" gutterBottom>
-              Response:
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "40vh",
+            padding: 3,
+          }}
+        >
+          <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
+            <Typography variant="h4" component="h1" align="center" gutterBottom>
+              Manage Subscription
             </Typography>
-            <pre>{JSON.stringify(response, null, 2)}</pre>
-          </div>
-        )}
-
+            <Box component="form" sx={{ mt: 2 }}>
+              <TextField
+                label="Contract Address"
+                value={contractAddress}
+                name="contractAddress"
+                onChange={this.handleChange}
+                fullWidth
+              />
+              <TextField
+                label="Token ID"
+                value={tokenId}
+                name="tokenId"
+                onChange={this.handleChange}
+                fullWidth
+                sx={{ mt: 2 }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={this.checkOwnership}
+                sx={{ mt: 2 }}
+              >
+                Check Ownership
+              </Button>
+              {isOwner ? (
+                <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={this.updateSubscription}
+                  >
+                    Update Subscription
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    fullWidth
+                    onClick={this.cancelSubscription}
+                  >
+                    Cancel Subscription
+                  </Button>
+                </Box>
+              ) : (
+                error && <Alert severity="error">{error}</Alert>
+              )}
+            </Box>
+            {/* {response && (
+              <div>
+                <Typography variant="h5" gutterBottom>
+                  Response:
+                </Typography>
+                <pre>{JSON.stringify(response, null, 2)}</pre>
+              </div>
+            )} */}
+          </Card>
+        </Box>
         <Dialog open={txDialogOpen} onClose={this.handleDialogClose}>
           <DialogTitle>{"Transaction Confirmation"}</DialogTitle>
           <DialogContent>

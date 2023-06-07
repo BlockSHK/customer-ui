@@ -51,8 +51,8 @@ export default class SignMessage extends Component {
         }}
       >
         <Card sx={{ width: "50%", padding: 3, textAlign: "center" }}>
-          <Typography variant="h5" gutterBottom>
-            Sign a Message
+          <Typography variant="h4" gutterBottom>
+            Sign Message
           </Typography>
           <TextField
             fullWidth
