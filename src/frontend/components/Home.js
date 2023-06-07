@@ -1,87 +1,144 @@
 import React from "react";
-import { Box, Typography, Grid, Paper } from "@mui/material";
-import Slider from "react-slick"; // you need to install this package
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import microsoft_logo from "./images/microsoft.webp";
-import { styled } from "@mui/material/styles";
+import {
+  Box,
+  Typography,
+  Container,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Link,
+  Grid,
+} from "@mui/material";
+import { styled } from "@mui/system";
+import microsoftImage from "./images/microsoft.webp";
+import oracleImage from "./images/oracle.webp";
+import adobeImage from "./images/adobe.png";
+import backgroundImage from "./images/background.jpg";
+import { Link as RouterLink } from "react-router-dom";
 
-const Home = () => (
-  <Box>
-    <BackgroundSlider />
-    <HowItWorks />
-    <Founders />
-  </Box>
-);
+const NavLink = styled(Link)(({ theme }) => ({
+  margin: theme.spacing(1),
+  color: "#ffffff",
+}));
 
-const Image = styled("img")({
-  width: "100%",
-  height: "40vh",
-  objectFit: "cover",
+const BackgroundImage = styled("div")({
+  backgroundImage: `url(${backgroundImage})`,
+  height: "60vh",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  position: "relative",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  color: "#fff",
+  fontSize: "4em",
+  textAlign: "center",
 });
+export default function Home() {
+  return (
+    <div>
+      <BackgroundImage>BlockSHK License Management</BackgroundImage>
+      <Container maxWidth="lg">
+        <Box py={5} textAlign="center">
+          <Typography variant="h2" gutterBottom>
+            Welcome to BlockSHK
+          </Typography>
+          <Typography variant="h5" gutterBottom>
+            The next generation of software subscription and licensing
+            management is here.
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            BlockSHK is a blockchain based system for managing software licenses
+            and subscription. We provide secure and tamper-proof licenses for
+            all types of software, from desktop applications to web services.
+            Our system is built on the latest blockchain technologies, ensuring
+            that your licenses are safe and can't be duplicated and enhancing
+            user Control.
+          </Typography>
+          <Box mt={3}>
+            <NavLink component={RouterLink} to="/buy-license">
+              <Button variant="contained" color="primary" size="large">
+                Buy a License
+              </Button>
+            </NavLink>
+          </Box>
+        </Box>
+        <Box py={5}>
+          <Typography variant="h4" gutterBottom>
+            Our Partners
+          </Typography>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={microsoftImage}
+                  alt="Microsoft"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    Microsoft
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Microsoft, our esteemed partner, provides a vast range of
+                    software licenses catering to different needs. Leverage our
+                    blockchain platform to manage and transfer these licenses
+                    with absolute ease and transparency.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
 
-const sliderSettings = {
-  dots: true,
-  infinite: true,
-  speed: 500,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-};
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={adobeImage}
+                  alt="Adobe"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    Adobe
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    We are proud to partner with Adobe, offering numerous
+                    digital licenses for creative software. Buy, sell, or trade
+                    Adobe licenses through our blockchain system, ensuring full
+                    security and clarity in every transaction.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
 
-const BackgroundSlider = () => (
-  <Box sx={{ width: "100%", height: "40vh", overflow: "hidden" }}>
-    <Slider {...sliderSettings}>
-      <Image src={microsoft_logo} alt="Image 1" />
-      <Image src={microsoft_logo} alt="Image 2" />
-      <Image src={microsoft_logo} alt="Image 3" />
-    </Slider>
-  </Box>
-);
-
-const Founders = () => (
-  <Grid container spacing={2}>
-    <Grid item xs={4}>
-      <Founder
-        name="Name1"
-        image="/path/to/image1.jpg"
-        description="Description1"
-      />
-    </Grid>
-    <Grid item xs={4}>
-      <Founder
-        name="Name2"
-        image="/path/to/image2.jpg"
-        description="Description2"
-      />
-    </Grid>
-    <Grid item xs={4}>
-      <Founder
-        name="Name3"
-        image="/path/to/image3.jpg"
-        description="Description3"
-      />
-    </Grid>
-  </Grid>
-);
-
-const Founder = ({ name, image, description }) => (
-  <Paper>
-    <img src={image} alt={name} />
-    <Typography variant="h6">{name}</Typography>
-    <Typography>{description}</Typography>
-  </Paper>
-);
-
-const HowItWorks = () => (
-  <Box>
-    <Typography variant="h4">How It Works</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-    <Typography>Here you describe how the application works.</Typography>
-  </Box>
-);
-
-export default Home;
+            <Grid item xs={12} sm={6} md={4}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={oracleImage}
+                  alt="Oracle"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    Oracle
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Our partnership with Oracle facilitates the management of
+                    complex database and middleware licenses. Utilize our
+                    blockchain-powered platform to handle Oracle licenses
+                    effortlessly, all while maintaining impeccable record
+                    integrity.
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
+    </div>
+  );
+}
