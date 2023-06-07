@@ -8,6 +8,12 @@ import {
   Box,
   Typography,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
 } from "@mui/material";
 
 export default class ManageSubscription extends Component {
@@ -19,6 +25,8 @@ export default class ManageSubscription extends Component {
       isOwner: false,
       response: null,
       error: null,
+      txDialogOpen: false,
+      snackbarOpen: false,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -26,6 +34,8 @@ export default class ManageSubscription extends Component {
     this.checkOwnership = this.checkOwnership.bind(this);
     this.updateSubscription = this.updateSubscription.bind(this);
     this.cancelSubscription = this.cancelSubscription.bind(this);
+    this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
   }
 
   handleChange(event) {
@@ -72,9 +82,13 @@ export default class ManageSubscription extends Component {
 
     try {
       const tx = await contract.updateSubscription(tokenId);
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, error: null, txDialogOpen: true });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        response: null,
+        snackbarOpen: true,
+      });
     }
   }
 
@@ -88,14 +102,34 @@ export default class ManageSubscription extends Component {
 
     try {
       const tx = await contract.cancelSubscription(tokenId);
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, error: null, txDialogOpen: true });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        response: null,
+        snackbarOpen: true,
+      });
     }
   }
 
+  handleDialogClose() {
+    this.setState({ txDialogOpen: false });
+  }
+
+  handleSnackbarClose() {
+    this.setState({ snackbarOpen: false });
+  }
+
   render() {
-    const { contractAddress, tokenId, isOwner, response, error } = this.state;
+    const {
+      contractAddress,
+      tokenId,
+      isOwner,
+      response,
+      error,
+      txDialogOpen,
+      snackbarOpen,
+    } = this.state;
 
     return (
       <Container maxWidth="sm">
@@ -158,6 +192,38 @@ export default class ManageSubscription extends Component {
             <pre>{JSON.stringify(response, null, 2)}</pre>
           </div>
         )}
+
+        <Dialog open={txDialogOpen} onClose={this.handleDialogClose}>
+          <DialogTitle>{"Transaction Confirmation"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {`Transaction has been sent to the blockchain network. Here is the response: \n ${JSON.stringify(
+                response,
+                null,
+                2
+              )}`}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDialogClose}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={this.handleSnackbarClose}
+          message={error}
+          action={
+            <Button
+              color="secondary"
+              size="small"
+              onClick={this.handleSnackbarClose}
+            >
+              Close
+            </Button>
+          }
+        />
       </Container>
     );
   }
