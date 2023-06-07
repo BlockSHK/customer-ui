@@ -58,7 +58,7 @@ export default function Home() {
             user Control.
           </Typography>
           <Box mt={3}>
-            <NavLink component={RouterLink} to="/buy-license">
+            <NavLink component={RouterLink} to="/customer-ui/buy-license">
               <Button variant="contained" color="primary" size="large">
                 Buy a License
               </Button>

@@ -76,16 +76,22 @@ function App() {
               </div>
             ) : (
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/buy-license" element={<BuyLicense />} />
+                <Route path="/customer-ui/" element={<Home />} />
                 <Route
-                  path="/manage-subscription"
+                  path="/customer-ui/buy-license"
+                  element={<BuyLicense />}
+                />
+                <Route
+                  path="/customer-ui/manage-subscription"
                   element={<ManageSubscription account={account} />}
                 />
 
-                <Route path="/sign-message" element={<SignMessage />} />
                 <Route
-                  path="/activate-license"
+                  path="/customer-ui/sign-message"
+                  element={<SignMessage />}
+                />
+                <Route
+                  path="/customer-ui/activate-license"
                   element={<ActivateLicense account={account} />}
                 />
               </Routes>

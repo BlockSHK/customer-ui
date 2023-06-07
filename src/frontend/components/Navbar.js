@@ -48,19 +48,22 @@ const Navigation = ({ web3Handler, account }) => {
             </Typography>
           </Box>
           <LinkBox>
-            <NavLink component={RouterLink} to="/">
+            <NavLink component={RouterLink} to="/customer-ui/">
               Home
             </NavLink>
-            <NavLink component={RouterLink} to="/buy-license">
+            <NavLink component={RouterLink} to="/customer-ui/buy-license">
               Buy License
             </NavLink>
-            <NavLink component={RouterLink} to="/manage-subscription">
+            <NavLink
+              component={RouterLink}
+              to="/customer-ui/manage-subscription"
+            >
               Manage Subscription
             </NavLink>
-            <NavLink component={RouterLink} to="/sign-message">
+            <NavLink component={RouterLink} to="/customer-ui/sign-message">
               Sign Message
             </NavLink>
-            <NavLink component={RouterLink} to="/activate-license">
+            <NavLink component={RouterLink} to="/customer-ui/activate-license">
               Activate License
             </NavLink>
             {account ? (
