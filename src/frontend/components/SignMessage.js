@@ -1,6 +1,22 @@
 import React, { Component } from "react";
 import { ethers } from "ethers";
 import { Button, TextField, Typography, Card, Box } from "@mui/material";
+import { styled } from "@mui/system";
+import backgroundImage from "./images/background_2.jpg";
+
+const BackgroundImage = styled("div")({
+  backgroundImage: `url(${backgroundImage})`,
+  height: "100%",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  backgroundAttachment: "fixed",
+  position: "absolute",
+  width: "100%",
+  overflow: "auto",
+  top: 0,
+  left: 0,
+});
 
 export default class SignMessage extends Component {
   constructor(props) {
@@ -42,45 +58,58 @@ export default class SignMessage extends Component {
     const { error, signedMessage } = this.state;
 
     return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "40vh",
-        }}
-      >
-        <Card sx={{ width: "50%", padding: 3, textAlign: "center" }}>
-          <Typography variant="h4" gutterBottom>
-            Sign Message
-          </Typography>
-          <TextField
-            fullWidth
-            margin="normal"
-            name="message"
-            onChange={this.handleChange}
-            value={this.state.message}
-            placeholder="Enter a message to sign"
-          />
-          <Button variant="contained" onClick={this.signMessage} sx={{ mt: 3 }}>
-            Sign Message
-          </Button>
-          {signedMessage && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6">Signed Message:</Typography>
-              <Typography sx={{ wordWrap: "break-word" }}>
-                {signedMessage}
-              </Typography>
-            </Box>
-          )}
-          {error && (
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h6">Error:</Typography>
-              <Typography>{error}</Typography>
-            </Box>
-          )}
-        </Card>
-      </Box>
+      <BackgroundImage>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "40vh",
+            marginTop: "10vh",
+          }}
+        >
+          <Card
+            sx={{
+              width: "50%",
+              padding: 3,
+              textAlign: "center",
+            }}
+          >
+            <Typography variant="h4" gutterBottom>
+              Sign Message
+            </Typography>
+            <TextField
+              fullWidth
+              margin="normal"
+              name="message"
+              onChange={this.handleChange}
+              value={this.state.message}
+              placeholder="Enter a message to sign"
+            />
+            <Button
+              variant="contained"
+              onClick={this.signMessage}
+              sx={{ mt: 3 }}
+            >
+              Sign Message
+            </Button>
+            {signedMessage && (
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h6">Signed Message:</Typography>
+                <Typography sx={{ wordWrap: "break-word" }}>
+                  {signedMessage}
+                </Typography>
+              </Box>
+            )}
+            {error && (
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="h6">Error:</Typography>
+                <Typography>{error}</Typography>
+              </Box>
+            )}
+          </Card>
+        </Box>
+      </BackgroundImage>
     );
   }
 }

@@ -15,8 +15,23 @@ import {
   DialogActions,
   Snackbar,
   Card,
+  styled,
 } from "@mui/material";
+import backgroundImage from "./images/background_2.jpg";
 
+const BackgroundImage = styled("div")({
+  backgroundImage: `url(${backgroundImage})`,
+  height: "100%",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  backgroundAttachment: "fixed",
+  position: "absolute",
+  width: "100%",
+  overflow: "auto",
+  top: 0,
+  left: 0,
+});
 export default class ManageSubscription extends Component {
   constructor(props) {
     super(props);
@@ -133,69 +148,76 @@ export default class ManageSubscription extends Component {
     } = this.state;
 
     return (
-      <Container maxWidth="sm">
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            minHeight: "40vh",
-            padding: 3,
-          }}
-        >
-          <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
-            <Typography variant="h4" component="h1" align="center" gutterBottom>
-              Manage Subscription
-            </Typography>
-            <Box component="form" sx={{ mt: 2 }}>
-              <TextField
-                label="Contract Address"
-                value={contractAddress}
-                name="contractAddress"
-                onChange={this.handleChange}
-                fullWidth
-              />
-              <TextField
-                label="Token ID"
-                value={tokenId}
-                name="tokenId"
-                onChange={this.handleChange}
-                fullWidth
-                sx={{ mt: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={this.checkOwnership}
-                sx={{ mt: 2 }}
+      <BackgroundImage>
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "40vh",
+              padding: 3,
+              marginTop: "10vh",
+            }}
+          >
+            <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
+              <Typography
+                variant="h4"
+                component="h1"
+                align="center"
+                gutterBottom
               >
-                Check Ownership
-              </Button>
-              {isOwner ? (
-                <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    fullWidth
-                    onClick={this.updateSubscription}
-                  >
-                    Update Subscription
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="error"
-                    fullWidth
-                    onClick={this.cancelSubscription}
-                  >
-                    Cancel Subscription
-                  </Button>
-                </Box>
-              ) : (
-                error && <Alert severity="error">{error}</Alert>
-              )}
-            </Box>
-            {/* {response && (
+                Manage Subscription
+              </Typography>
+              <Box component="form" sx={{ mt: 2 }}>
+                <TextField
+                  label="Contract Address"
+                  value={contractAddress}
+                  name="contractAddress"
+                  onChange={this.handleChange}
+                  fullWidth
+                />
+                <TextField
+                  label="Token ID"
+                  value={tokenId}
+                  name="tokenId"
+                  onChange={this.handleChange}
+                  fullWidth
+                  sx={{ mt: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={this.checkOwnership}
+                  sx={{ mt: 2 }}
+                >
+                  Check Ownership
+                </Button>
+                {isOwner ? (
+                  <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={this.updateSubscription}
+                    >
+                      Update Subscription
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                      onClick={this.cancelSubscription}
+                    >
+                      Cancel Subscription
+                    </Button>
+                  </Box>
+                ) : (
+                  error && <Alert severity="error">{error}</Alert>
+                )}
+              </Box>
+              {/* {response && (
               <div>
                 <Typography variant="h5" gutterBottom>
                   Response:
@@ -203,40 +225,41 @@ export default class ManageSubscription extends Component {
                 <pre>{JSON.stringify(response, null, 2)}</pre>
               </div>
             )} */}
-          </Card>
-        </Box>
-        <Dialog open={txDialogOpen} onClose={this.handleDialogClose}>
-          <DialogTitle>{"Transaction Confirmation"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              {`Transaction has been sent to the blockchain network. Here is the response: \n ${JSON.stringify(
-                response,
-                null,
-                2
-              )}`}
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleDialogClose}>Close</Button>
-          </DialogActions>
-        </Dialog>
+            </Card>
+          </Box>
+          <Dialog open={txDialogOpen} onClose={this.handleDialogClose}>
+            <DialogTitle>{"Transaction Confirmation"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {`Transaction has been sent to the blockchain network. Here is the response: \n ${JSON.stringify(
+                  response,
+                  null,
+                  2
+                )}`}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleDialogClose}>Close</Button>
+            </DialogActions>
+          </Dialog>
 
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={this.handleSnackbarClose}
-          message={error}
-          action={
-            <Button
-              color="secondary"
-              size="small"
-              onClick={this.handleSnackbarClose}
-            >
-              Close
-            </Button>
-          }
-        />
-      </Container>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={this.handleSnackbarClose}
+            message={error}
+            action={
+              <Button
+                color="secondary"
+                size="small"
+                onClick={this.handleSnackbarClose}
+              >
+                Close
+              </Button>
+            }
+          />
+        </Container>
+      </BackgroundImage>
     );
   }
 }
