@@ -8,7 +8,14 @@ import {
   Button,
   Box,
   Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Snackbar,
   Alert,
+  Card,
 } from "@mui/material";
 
 export default class ActivateLicense extends Component {
@@ -25,6 +32,8 @@ export default class ActivateLicense extends Component {
       licenseContractAddress: "",
       error: null,
       response: null,
+      txDialogOpen: false,
+      snackbarOpen: false,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -35,8 +44,9 @@ export default class ActivateLicense extends Component {
     this.deactivateLicense = this.deactivateLicense.bind(this);
     this.signHash = this.signHash.bind(this);
     this.connectWallet = this.connectWallet.bind(this);
+    this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
   }
-
   async componentDidMount() {
     await this.connectWallet();
   }
@@ -153,25 +163,25 @@ export default class ActivateLicense extends Component {
 
   async activateLicense() {
     const { licenseContractAddress, tokenId, hash, signedHash } = this.state;
-    console.log(licenseContractAddress, tokenId, hash, signedHash);
     const contract = new ethers.Contract(
       licenseContractAddress,
       LicenseActivation.abi,
       this.provider.getSigner()
     );
-
-    // Create a hash of the message
     const messageHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(hash));
-
     try {
       const tx = await contract.activateLicense(
         tokenId,
         messageHash,
-        signedHash // Pass the split signature
+        signedHash
       );
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, txDialogOpen: true, error: null });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        snackbarOpen: true,
+        response: null,
+      });
     }
   }
 
@@ -182,15 +192,17 @@ export default class ActivateLicense extends Component {
       LicenseActivation.abi,
       this.provider.getSigner()
     );
-
     try {
       const tx = await contract.deactivateLicense(tokenId);
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, txDialogOpen: true, error: null });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        snackbarOpen: true,
+        response: null,
+      });
     }
   }
-
   async signHash() {
     const signer = this.provider.getSigner();
     const { hash } = this.state;
@@ -209,7 +221,17 @@ export default class ActivateLicense extends Component {
       this.setState({ error: "Error while signing hash: " + err.message });
     }
   }
+  handleDialogClose() {
+    this.setState({ txDialogOpen: false });
+  }
 
+  handleSnackbarClose(event, reason) {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    this.setState({ snackbarOpen: false });
+  }
   render() {
     const {
       contractAddress,
@@ -220,44 +242,37 @@ export default class ActivateLicense extends Component {
       licenseActivated,
       response,
       error,
+      txDialogOpen,
+      snackbarOpen,
     } = this.state;
 
     return (
       <Container maxWidth="sm">
-        <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Activate License
-        </Typography>
-        <Box component="form" sx={{ mt: 2 }}>
-          <TextField
-            label="Contract Address"
-            value={contractAddress}
-            name="contractAddress"
-            onChange={this.handleChange}
-            fullWidth
-          />
-          <TextField
-            label="Token ID"
-            value={tokenId}
-            name="tokenId"
-            onChange={this.handleChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={this.checkOwnership}
-            sx={{ mt: 2 }}
-          >
-            Check Ownership
-          </Button>
-          {isOwner && !licenseActivated ? (
-            <>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "40vh",
+            padding: 3,
+          }}
+        >
+          <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
+            <Typography variant="h4" component="h1" align="center" gutterBottom>
+              Activate License
+            </Typography>
+            <Box component="form" sx={{ mt: 2 }}>
               <TextField
-                label="Hash"
-                value={hash}
-                name="hash"
+                label="Contract Address"
+                value={contractAddress}
+                name="contractAddress"
+                onChange={this.handleChange}
+                fullWidth
+              />
+              <TextField
+                label="Token ID"
+                value={tokenId}
+                name="tokenId"
                 onChange={this.handleChange}
                 fullWidth
                 sx={{ mt: 2 }}
@@ -266,54 +281,105 @@ export default class ActivateLicense extends Component {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={this.signHash}
+                onClick={this.checkOwnership}
                 sx={{ mt: 2 }}
               >
-                Sign Hash
+                Check Ownership
               </Button>
-              <TextField
-                label="Signed Hash"
-                value={signedHash}
-                name="signedHash"
-                onChange={this.handleChange}
-                fullWidth
-                sx={{ mt: 2 }}
-              />
-              <Button
-                variant="contained"
-                color="secondary"
-                fullWidth
-                onClick={this.activateLicense}
-                sx={{ mt: 2 }}
-              >
-                Activate License
-              </Button>
-            </>
-          ) : (
-            <>
-              {isOwner && licenseActivated && (
-                <Button
-                  variant="contained"
-                  color="error"
-                  fullWidth
-                  onClick={this.deactivateLicense}
-                  sx={{ mt: 2 }}
-                >
-                  Deactivate License
-                </Button>
+              {isOwner && !licenseActivated ? (
+                <>
+                  <TextField
+                    label="Hash"
+                    value={hash}
+                    name="hash"
+                    onChange={this.handleChange}
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    onClick={this.signHash}
+                    sx={{ mt: 2 }}
+                  >
+                    Sign Hash
+                  </Button>
+                  <TextField
+                    label="Signed Hash"
+                    value={signedHash}
+                    name="signedHash"
+                    onChange={this.handleChange}
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    fullWidth
+                    onClick={this.activateLicense}
+                    sx={{ mt: 2 }}
+                  >
+                    Activate License
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {isOwner && licenseActivated && (
+                    <Button
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                      onClick={this.deactivateLicense}
+                      sx={{ mt: 2 }}
+                    >
+                      Deactivate License
+                    </Button>
+                  )}
+                  {error && <Alert severity="error">{error}</Alert>}
+                </>
               )}
-              {error && <Alert severity="error">{error}</Alert>}
-            </>
-          )}
-        </Box>
-        {response && (
+            </Box>
+            {/* {response && (
           <div>
             <Typography variant="h5" gutterBottom>
               Response:
             </Typography>
             <pre>{JSON.stringify(response, null, 2)}</pre>
           </div>
-        )}
+        )} */}
+          </Card>
+        </Box>
+        <Dialog
+          open={txDialogOpen}
+          onClose={this.handleDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">Transaction Status</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {`Transaction has been sent to the blockchain network. Here is the response: \n ${JSON.stringify(
+                response,
+                null,
+                2
+              )}`}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleDialogClose}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={this.handleSnackbarClose}
+        >
+          <Alert onClose={this.handleSnackbarClose} severity="error">
+            {error}
+          </Alert>
+        </Snackbar>
       </Container>
     );
   }
