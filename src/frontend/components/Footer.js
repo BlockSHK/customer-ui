@@ -34,12 +34,12 @@ const Footer = () => {
             <Box display="flex" alignItems="center" marginX={2}>
               <EmailIcon />
               <Link
-                href="mailto:email@example.com"
+                href="mailto:BlockSHK@gmail.com"
                 color="inherit"
                 underline="none"
               >
                 <Typography variant="body1" marginLeft={1}>
-                  email@example.com
+                  BlockSHK@gmail.com
                 </Typography>
               </Link>
             </Box>
