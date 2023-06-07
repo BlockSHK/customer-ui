@@ -30,7 +30,10 @@ const LinkBox = styled(Box)(({ theme }) => ({
 
 const Navigation = ({ web3Handler, account }) => {
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+    >
       <Container>
         <Toolbar
           variant="dense"

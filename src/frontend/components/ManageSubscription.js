@@ -8,8 +8,30 @@ import {
   Box,
   Typography,
   Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
+  Card,
+  styled,
 } from "@mui/material";
+import backgroundImage from "./images/background_2.jpg";
 
+const BackgroundImage = styled("div")({
+  backgroundImage: `url(${backgroundImage})`,
+  height: "100%",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  backgroundAttachment: "fixed",
+  position: "absolute",
+  width: "100%",
+  overflow: "auto",
+  top: 0,
+  left: 0,
+});
 export default class ManageSubscription extends Component {
   constructor(props) {
     super(props);
@@ -19,6 +41,8 @@ export default class ManageSubscription extends Component {
       isOwner: false,
       response: null,
       error: null,
+      txDialogOpen: false,
+      snackbarOpen: false,
     };
 
     this.provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -26,6 +50,8 @@ export default class ManageSubscription extends Component {
     this.checkOwnership = this.checkOwnership.bind(this);
     this.updateSubscription = this.updateSubscription.bind(this);
     this.cancelSubscription = this.cancelSubscription.bind(this);
+    this.handleDialogClose = this.handleDialogClose.bind(this);
+    this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
   }
 
   handleChange(event) {
@@ -72,9 +98,13 @@ export default class ManageSubscription extends Component {
 
     try {
       const tx = await contract.updateSubscription(tokenId);
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, error: null, txDialogOpen: true });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        response: null,
+        snackbarOpen: true,
+      });
     }
   }
 
@@ -88,77 +118,148 @@ export default class ManageSubscription extends Component {
 
     try {
       const tx = await contract.cancelSubscription(tokenId);
-      this.setState({ response: tx, error: null });
+      this.setState({ response: tx, error: null, txDialogOpen: true });
     } catch (error) {
-      this.setState({ error: error.message, response: null });
+      this.setState({
+        error: error.message,
+        response: null,
+        snackbarOpen: true,
+      });
     }
   }
 
+  handleDialogClose() {
+    this.setState({ txDialogOpen: false });
+  }
+
+  handleSnackbarClose() {
+    this.setState({ snackbarOpen: false });
+  }
+
   render() {
-    const { contractAddress, tokenId, isOwner, response, error } = this.state;
+    const {
+      contractAddress,
+      tokenId,
+      isOwner,
+      response,
+      error,
+      txDialogOpen,
+      snackbarOpen,
+    } = this.state;
 
     return (
-      <Container maxWidth="sm">
-        <Typography variant="h4" component="h1" align="center" gutterBottom>
-          Manage Subscription
-        </Typography>
-        <Box component="form" sx={{ mt: 2 }}>
-          <TextField
-            label="Contract Address"
-            value={contractAddress}
-            name="contractAddress"
-            onChange={this.handleChange}
-            fullWidth
-          />
-          <TextField
-            label="Token ID"
-            value={tokenId}
-            name="tokenId"
-            onChange={this.handleChange}
-            fullWidth
-            sx={{ mt: 2 }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={this.checkOwnership}
-            sx={{ mt: 2 }}
+      <BackgroundImage>
+        <Container maxWidth="sm">
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              minHeight: "40vh",
+              padding: 3,
+              marginTop: "10vh",
+            }}
           >
-            Check Ownership
-          </Button>
-          {isOwner ? (
-            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+            <Card sx={{ width: "100%", padding: 3, textAlign: "center" }}>
+              <Typography
+                variant="h4"
+                component="h1"
+                align="center"
+                gutterBottom
+              >
+                Manage Subscription
+              </Typography>
+              <Box component="form" sx={{ mt: 2 }}>
+                <TextField
+                  label="Contract Address"
+                  value={contractAddress}
+                  name="contractAddress"
+                  onChange={this.handleChange}
+                  fullWidth
+                />
+                <TextField
+                  label="Token ID"
+                  value={tokenId}
+                  name="tokenId"
+                  onChange={this.handleChange}
+                  fullWidth
+                  sx={{ mt: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  onClick={this.checkOwnership}
+                  sx={{ mt: 2 }}
+                >
+                  Check Ownership
+                </Button>
+                {isOwner ? (
+                  <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      fullWidth
+                      onClick={this.updateSubscription}
+                    >
+                      Update Subscription
+                    </Button>
+                    <Button
+                      variant="contained"
+                      color="error"
+                      fullWidth
+                      onClick={this.cancelSubscription}
+                    >
+                      Cancel Subscription
+                    </Button>
+                  </Box>
+                ) : (
+                  error && <Alert severity="error">{error}</Alert>
+                )}
+              </Box>
+              {/* {response && (
+              <div>
+                <Typography variant="h5" gutterBottom>
+                  Response:
+                </Typography>
+                <pre>{JSON.stringify(response, null, 2)}</pre>
+              </div>
+            )} */}
+            </Card>
+          </Box>
+          <Dialog open={txDialogOpen} onClose={this.handleDialogClose}>
+            <DialogTitle>{"Transaction Confirmation"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {`Transaction has been sent to the blockchain network. Here is the response: \n ${JSON.stringify(
+                  response,
+                  null,
+                  2
+                )}`}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.handleDialogClose}>Close</Button>
+            </DialogActions>
+          </Dialog>
+
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={this.handleSnackbarClose}
+            message={error}
+            action={
               <Button
-                variant="contained"
                 color="secondary"
-                fullWidth
-                onClick={this.updateSubscription}
+                size="small"
+                onClick={this.handleSnackbarClose}
               >
-                Update Subscription
+                Close
               </Button>
-              <Button
-                variant="contained"
-                color="error"
-                fullWidth
-                onClick={this.cancelSubscription}
-              >
-                Cancel Subscription
-              </Button>
-            </Box>
-          ) : (
-            error && <Alert severity="error">{error}</Alert>
-          )}
-        </Box>
-        {response && (
-          <div>
-            <Typography variant="h5" gutterBottom>
-              Response:
-            </Typography>
-            <pre>{JSON.stringify(response, null, 2)}</pre>
-          </div>
-        )}
-      </Container>
+            }
+          />
+        </Container>
+      </BackgroundImage>
     );
   }
 }

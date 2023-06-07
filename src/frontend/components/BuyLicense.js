@@ -18,10 +18,27 @@ import {
   DialogContentText,
   DialogActions,
   Paper,
+  styled,
 } from "@mui/material";
 import PerpetualLicenseAbi from "../contractsData/PerpetualLicense.json";
 import FixedSubscriptionAbi from "../contractsData/FixedSubscriptionLicense.json";
 import AutoRenewSubscriptionAbi from "../contractsData/AutoRenewSubscriptionLicense.json";
+
+import backgroundImage from "./images/background_2.jpg";
+
+const BackgroundImage = styled("div")({
+  backgroundImage: `url(${backgroundImage})`,
+  height: "100%",
+  backgroundPosition: "center",
+  backgroundRepeat: "no-repeat",
+  backgroundSize: "cover",
+  backgroundAttachment: "fixed",
+  position: "absolute",
+  width: "100%",
+  overflow: "auto",
+  top: 0,
+  left: 0,
+});
 
 export default class BuyLicense extends Component {
   constructor(props) {
@@ -190,7 +207,7 @@ export default class BuyLicense extends Component {
   renderLicenseSection = (licenses, title) => {
     return (
       <Box component={Paper} p={2} mt={2} mb={2}>
-        <Typography variant="h4" align="left" gutterBottom>
+        <Typography variant="h5" align="left" gutterBottom>
           {title}
         </Typography>
         {licenses.length > 0 ? (
@@ -273,58 +290,83 @@ export default class BuyLicense extends Component {
     );
 
     return (
-      <Container maxWidth="md">
-        <Box mt={4} mb={2}>
-          <Typography variant="h2" align="center" gutterBottom>
-            License List
-          </Typography>
-        </Box>
+      <BackgroundImage>
+        <div style={{ position: "relative" }}>
+          <Container maxWidth="md">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "40vh",
+                marginTop: "10vh",
+                marginBottom: "10vh",
+              }}
+            >
+              <Card sx={{ width: "100%", padding: 1, textAlign: "center" }}>
+                <Box mt={4} mb={2}>
+                  <Typography variant="h4" align="center" gutterBottom>
+                    Buy Your License Here
+                  </Typography>
+                </Box>
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            {this.renderLicenseSection(perpetualLicenses, "Perpetual Licenses")}
-            {this.renderLicenseSection(
-              fixedSubscriptionLicenses,
-              "Fixed Subscription Licenses"
-            )}
-            {this.renderLicenseSection(
-              autoRenewSubscriptionLicenses,
-              "Auto Renew Subscription Licenses"
-            )}
-          </>
-        )}
+                {loading ? (
+                  <Box display="flex" justifyContent="center" mt={5}>
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <>
+                    {this.renderLicenseSection(
+                      perpetualLicenses,
+                      "Perpetual Licenses"
+                    )}
+                    {this.renderLicenseSection(
+                      fixedSubscriptionLicenses,
+                      "Fixed Subscription Licenses"
+                    )}
+                    {this.renderLicenseSection(
+                      autoRenewSubscriptionLicenses,
+                      "Auto Renew Subscription Licenses"
+                    )}
+                  </>
+                )}
 
-        {error && (
-          <Box color="error.main" mt={2}>
-            <Typography variant="h6">Error:</Typography>
-            <Typography variant="body1">{error}</Typography>
-          </Box>
-        )}
+                {error && (
+                  <Box color="error.main" mt={2}>
+                    <Typography variant="h6">Error:</Typography>
+                    <Typography variant="body1">{error}</Typography>
+                  </Box>
+                )}
 
-        {this.renderLicenseDetailDialog(licenseDetail)}
+                {this.renderLicenseDetailDialog(licenseDetail)}
 
-        <Dialog
-          open={
-            this.state.transactionInProgress || this.state.transactionComplete
-          }
-          onClose={
-            this.state.transactionComplete ? this.handleCloseDialog : undefined
-          }
-        >
-          <DialogTitle>{this.state.dialogTitle}</DialogTitle>
-          <DialogContent>
-            {!this.state.transactionComplete && <CircularProgress />}
-            <DialogContentText>{this.state.dialogContent}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleCloseDialog}>Close</Button>
-          </DialogActions>
-        </Dialog>
-      </Container>
+                <Dialog
+                  open={
+                    this.state.transactionInProgress ||
+                    this.state.transactionComplete
+                  }
+                  onClose={
+                    this.state.transactionComplete
+                      ? this.handleCloseDialog
+                      : undefined
+                  }
+                >
+                  <DialogTitle>{this.state.dialogTitle}</DialogTitle>
+                  <DialogContent>
+                    {!this.state.transactionComplete && <CircularProgress />}
+                    <DialogContentText>
+                      {this.state.dialogContent}
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={this.handleCloseDialog}>Close</Button>
+                  </DialogActions>
+                </Dialog>
+              </Card>
+            </Box>
+          </Container>
+        </div>
+      </BackgroundImage>
     );
   }
 }
