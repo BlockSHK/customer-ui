@@ -76,6 +76,7 @@ function App() {
               </div>
             ) : (
               <Routes>
+                <Route path="/" element={<Home />} />
                 <Route path="/customer-ui/" element={<Home />} />
                 <Route
                   path="/customer-ui/buy-license"
