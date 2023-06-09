@@ -8,8 +8,8 @@ Welcome to BlockSHK Customer Application! This is a blockchain-based platform de
 
 - Purchase software licenses.
 - Manage your subscriptions.
+- Activate your licenses.
 - Seamlessly integrate with blockchain technologies.
-- Partnered with Microsoft, Adobe, and Oracle.
 - Secure and tamper-proof license management.
 
 ## Getting Started
