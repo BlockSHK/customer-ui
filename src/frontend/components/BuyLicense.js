@@ -104,7 +104,6 @@ export default class BuyLicense extends Component {
       } else {
         tx = await contract.buyToken({
           value: ethers.BigNumber.from(license.price.toString()),
-          gasLimit: ethers.utils.hexlify(100000),
         });
       }
 
