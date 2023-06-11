@@ -248,6 +248,9 @@ export default class BuyLicense extends Component {
             Status: {license ? license.status : ""}
           </DialogContentText>
           <DialogContentText>
+            Contract: {license ? license.contract.address : ""}
+          </DialogContentText>
+          <DialogContentText>
             Company: {license ? license.company : ""}
           </DialogContentText>
           <DialogContentText>
