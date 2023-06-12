@@ -97,7 +97,17 @@ export default class ManageSubscription extends Component {
     );
 
     try {
-      const tx = await contract.updateSubscription(tokenId);
+      // Get the license price
+      const licensePrice = await contract.getLicensePrice();
+
+      // Convert the license price to ethers
+      const etherAmount = ethers.utils.formatEther(licensePrice);
+
+      // Send the transaction with the required ether value
+      const tx = await contract.updateSubscription(tokenId, {
+        value: ethers.utils.parseEther(etherAmount),
+      });
+
       this.setState({ response: tx, error: null, txDialogOpen: true });
     } catch (error) {
       this.setState({
