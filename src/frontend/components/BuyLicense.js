@@ -100,7 +100,10 @@ export default class BuyLicense extends Component {
     try {
       let tx;
       if (license.type === "CONTRACT_AUTO_RENEW_SUBSCRIPTION") {
-        tx = await contract.buyToken();
+        const overrides = {
+          gasLimit: 5000000, // specify the gas limit as a property in the overrides object
+        };
+        tx = await contract.buyToken(overrides);
       } else {
         tx = await contract.buyToken({
           value: ethers.BigNumber.from(license.price.toString()),
